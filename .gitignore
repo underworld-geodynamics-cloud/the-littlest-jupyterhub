@@ -105,3 +105,4 @@ venv.bak/
 
 # OS X stuff
 .DS_Store
+.vscode/settings.json
