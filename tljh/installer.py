@@ -170,7 +170,7 @@ def ensure_jupyterlab_extensions():
     Install the JupyterLab extensions we want.
     """
     extensions = [
-        '@jupyter-widgets/jupyterlab-manager@2.0.0' # for jupyterlab 2.x
+        '@jupyter-widgets/jupyterlab-manager@2.0.0', # for jupyterlab 2.x
         'jupyterlab-jupytext@1.2.1'                 # for jupyterlab 2.x
     ]
     install_options = [
