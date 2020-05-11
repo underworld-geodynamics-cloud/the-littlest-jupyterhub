@@ -171,7 +171,7 @@ def ensure_jupyterlab_extensions():
     """
     extensions = [
         '@jupyter-widgets/jupyterlab-manager@2.0.0', # for jupyterlab 2.x
-        'jupyterlab-jupytext@1.2.1'                 # for jupyterlab 2.x
+        'jupyterlab-jupytext@1.2.1'                  # for jupyterlab 2.x
     ]
     install_options = [
         '--no-build'   # do not build extension at install time. Will build later

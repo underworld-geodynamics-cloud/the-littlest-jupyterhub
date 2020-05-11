@@ -15,3 +15,6 @@ nbresuse==0.3.*
 ipywidgets==7.5.*
 # Pin tornado
 tornado<6
+
+# Add jupytext server extension too
+jupytext>=1.4.2
