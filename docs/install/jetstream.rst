@@ -53,7 +53,7 @@ Let's create the server on which we can run JupyterHub.
 
    #. Give your server a descriptive **Instance Name**.
    #. Select an appropriate **Instance Size**. We suggest m1.medium or larger.
-      Make sure your instance has at least **1GB** of RAM.
+      Make sure your instance has at least **1.15GB** of RAM.
 
       Check out our guide on How To :ref:`howto/admin/resource-estimation` to help pick
       how much Memory, CPU & disk space your server needs.
@@ -86,7 +86,7 @@ Let's create the server on which we can run JupyterHub.
    .. code-block:: bash
 
       #!/bin/bash
-      curl https://raw.githubusercontent.com/jupyterhub/the-littlest-jupyterhub/master/bootstrap/bootstrap.py \
+      curl -L https://tljh.jupyter.org/bootstrap.py \
         | sudo python3 - \
           --admin <admin-user-name>
 

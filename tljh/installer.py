@@ -6,6 +6,7 @@ import itertools
 import logging
 import os
 import secrets
+import signal
 import subprocess
 import sys
 import time
@@ -170,8 +171,9 @@ def ensure_jupyterlab_extensions():
     Install the JupyterLab extensions we want.
     """
     extensions = [
-        '@jupyter-widgets/jupyterlab-manager@2.0.0', # for jupyterlab 2.x
-        'jupyterlab-jupytext@1.2.1'                  # for jupyterlab 2.x
+        '@jupyter-widgets/jupyterlab-manager', # for jupyterlab 2.x
+        'jupyterlab-jupytext'                  # for jupyterlab 2.x
+
     ]
     install_options = [
         '--no-build'   # do not build extension at install time. Will build later
@@ -220,7 +222,7 @@ def ensure_jupyterhub_package(prefix):
     conda.ensure_pip_packages(prefix, [
         'jupyterhub==1.1.0',
         'jupyterhub-dummyauthenticator==0.3.1',
-        'jupyterhub-systemdspawner==0.13',
+        'jupyterhub-systemdspawner==0.14',
         'jupyterhub-firstuseauthenticator==0.14.1',
         'jupyterhub-nativeauthenticator==0.0.5',
         'jupyterhub-ldapauthenticator==1.3.0',
@@ -256,7 +258,7 @@ def ensure_user_environment(user_requirements_txt_file):
 
     miniconda_old_version = '4.5.4'
     miniconda_new_version = '4.7.10'
-    miniconda_installer_md5 = "1c945f2b3335c7b2b15130b1b2dc5cf4"
+    miniconda_installer_sha256 = "8a324adcc9eaf1c09e22a992bb6234d91a94146840ee6b11c114ecadafc68121"
 
     if conda.check_miniconda_version(USER_ENV_PREFIX, miniconda_new_version):
         conda_version = '4.8.3'
@@ -265,7 +267,9 @@ def ensure_user_environment(user_requirements_txt_file):
     # If no prior miniconda installation is found, we can install a newer version
     else:
         logger.info('Downloading & setting up user environment...')
-        with conda.download_miniconda_installer(miniconda_new_version, miniconda_installer_md5) as installer_path:
+        # FIXME: allow using miniforge
+        installer_url = "https://repo.continuum.io/miniconda/Miniconda3-{}-Linux-x86_64.sh".format(miniconda_new_version)
+        with conda.download_miniconda_installer(installer_url, miniconda_installer_sha256) as installer_path:
             conda.install_miniconda(installer_path, USER_ENV_PREFIX)
         conda_version = '4.8.3'
 
@@ -398,7 +402,7 @@ def setup_plugins(plugins=None):
     return pm
 
 
-def run_plugin_actions(plugin_manager, plugins):
+def run_plugin_actions(plugin_manager):
     """
     Run installer hooks defined in plugins
     """
@@ -482,6 +486,11 @@ def main():
         nargs='*',
         help='Plugin pip-specs to install'
     )
+    argparser.add_argument(
+        '--progress-page-server-pid',
+        type=int,
+        help='The pid of the progress page server'
+    )
 
     args = argparser.parse_args()
 
@@ -496,12 +505,23 @@ def main():
     ensure_node()
     ensure_jupyterhub_package(HUB_ENV_PREFIX)
     ensure_jupyterlab_extensions()
+
+    # Stop the http server with the progress page before traefik starts
+    if args.progress_page_server_pid:
+        try:
+            os.kill(args.progress_page_server_pid, signal.SIGINT)
+            # Log and print the message to make testing easier
+            print("Progress page server stopped successfully.")
+        except Exception as e:
+            logger.error(f"Couldn't stop the progress page server. Exception was {e}.")
+            pass
+
     ensure_jupyterhub_service(HUB_ENV_PREFIX)
     ensure_jupyterhub_running()
     ensure_symlinks(HUB_ENV_PREFIX)
 
     # Run installer plugins last
-    run_plugin_actions(pm, args.plugin)
+    run_plugin_actions(pm)
 
     logger.info("Done!")
 

@@ -69,7 +69,7 @@ Let's create the server on which we can run JupyterHub.
 #. For **Zone**, pick any of the options. Leaving the default as is is fine.
 
 #. Under **Machine** type, select the amount of CPU / RAM / GPU you want for your
-   server. You need at least **1GB** of RAM.
+   server. You need at least **1.15GB** of RAM.
 
    You can select a preset combination in the default **basic view**.
 
@@ -144,7 +144,7 @@ Let's create the server on which we can run JupyterHub.
    .. code-block:: bash
 
        #!/bin/bash
-       curl https://raw.githubusercontent.com/jupyterhub/the-littlest-jupyterhub/master/bootstrap/bootstrap.py \
+       curl -L https://tljh.jupyter.org/bootstrap.py \
          | sudo python3 - \
            --admin <admin-user-name>
 
