@@ -58,8 +58,10 @@ commands:
 
                     .circleci/integration-test.py run-test \
                     --bootstrap-pip-spec "$BOOTSTRAP_PIP_SPEC" \
-                    basic-tests test_hub.py test_install.py test_extensions.py \
+                    basic-tests test_hub.py test_proxy.py \
+                    test_install.py test_extensions.py \
                     << parameters.upgrade >>
+
     admin_tests:
         parameters:
             upgrade:
@@ -108,7 +110,7 @@ commands:
             - run:
                 name: Run bootstrap checks
                 command: |
-                    py.test integration-tests/test_bootstrap.py
+                    py.test integration-tests/test_bootstrap.py -s
 
 
 jobs:
@@ -167,14 +169,13 @@ jobs:
 
             - build_systemd_image
 
+            - bootstrap_checks
+
             - basic_tests
 
             - admin_tests
 
             - plugin_tests
-
-            - bootstrap_checks
-
 
     upgrade-test:
         docker:
@@ -211,42 +212,6 @@ jobs:
             - plugin_tests:
                 upgrade: "--upgrade"
 
-
-    documentation:
-        executor: ubuntu_docker
-        steps:
-            - checkout
-
-            # Setup Python
-            - install_python
-
-            # Download and cache dependencies
-            - restore_cache:
-                key: v1-dependencies-py3.6-sphinx
-
-            - setup_venv
-
-            - run:
-                name: install dependencies
-                command: |
-                    pip install sphinx
-                    pip install -r docs/requirements.txt
-
-            - save_cache:
-                paths:
-                    - /srv/venv/
-                key: v1-dependencies-py3.6-sphinx
-
-            - run:
-                name: build documentation
-                command: |
-                    cd docs
-                    make html
-
-            - store_artifacts:
-                path: docs/_build/html/
-                destination: html
-
 workflows:
     version: 2
     all-tests:
@@ -254,4 +219,3 @@ workflows:
             - unit-test
             - integration-test
             - upgrade-test
-            - documentation

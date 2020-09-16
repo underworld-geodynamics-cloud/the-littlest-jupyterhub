@@ -32,7 +32,7 @@ Pre-requisites
 
 #. Some familiarity with the command line.
 #. A server running Ubuntu 18.04 where you have root access.
-#. At least **1GB** of RAM on your server.
+#. At least **1.15GB** of RAM on your server.
 #. Ability to ``ssh`` into the server & run commands from the prompt.
 #. A **IP address** where the server can be reached from the browsers of your target audience.
 
@@ -59,7 +59,7 @@ Step 1: Installing The Littlest JupyterHub
 
    .. code-block:: bash
 
-      curl https://raw.githubusercontent.com/jupyterhub/the-littlest-jupyterhub/master/bootstrap/bootstrap.py | sudo -E python3 - --admin <admin-user-name>
+      curl -L https://tljh.jupyter.org/bootstrap.py | sudo -E python3 - --admin <admin-user-name>
 
    .. note::
 
