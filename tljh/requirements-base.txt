@@ -18,4 +18,4 @@ ipywidgets==7.5.*
 tornado<6
 
 # Add jupytext server extension too
-jupytext>=1.4.2
+jupytext>=1.6.*
